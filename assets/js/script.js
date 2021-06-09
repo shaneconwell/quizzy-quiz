@@ -1,6 +1,5 @@
-
-
 var startQuizEl = document.getElementById("startQuiz");
+var tryAgainButton = document.getElementById("tryAgain");
 var timerEl = document.querySelector(".timer");
 var optionButtons = [document.querySelector("#quizOption1"), document.querySelector("#quizOption2"),
     document.querySelector("#quizOption3"), document.querySelector("#quizOption4")
@@ -9,10 +8,13 @@ var container = document.querySelector(".container");
 var enterInitialsEl = (".enterInitials")
 var points = document.querySelector("#points")
 var finalScore = document.querySelector("#finalScore")
-var userInitialsInput = document.querySelector("#userInitials");
-var initialSubmitBtn = document.querySelector("#initialSubmit");
+var userInitials = document.querySelector("#userInitials");
+var submitButton = document.querySelector("#submitButton");
+var backButton = document.querySelector("#backButton");
+var resetButton = document.querySelector("#resetButton");
 var savedName = document.querySelector("#saved-name");
 var savedScore = document.querySelector("#saved-score");
+var userHighscore;
 
 var questions = [{
         title: "From the given array which index is the letter 'b' on? ['a', 'b', 'c', 'd']",
@@ -47,134 +49,121 @@ var questions = [{
 ];
 var questionNum = 0;
 var questionInfo = questions[questionNum];
-
-var timer;
-var timeLeft = 75;
 var questionsAsked = 0;
+var timer;
+// display time hard-coded into html 1 second higher than "timeLeft" to account for a slight time delay
+var timeLeft = 49;
+
 points = 0;
 
 // Event listener checking for answer clicks in its container.
-container.addEventListener("click", function(event) {
+container.addEventListener("click", function (event) {
     var element = event.target;
     startQuizEl.setAttribute("style", "display:none")
     if (element.matches(".answer-button")) {
-    
-      console.log("is clicked");
-      console.log("#" + questionsAsked);
-      checkAnswer();
-
-    }else{
+        checkAnswer();
+    } else {
         return
     }
 });
-// var answerText = " ";
 
+function renderHighscores() {
+    // Clear todoList element and update todoCountSpan
+    highscoreOutput.innerHTML = "score";
+    document.getElementById("initialsOutput").innerHTML = userHighscore.userInitials + " - ";
+    document.getElementById("highscoreOutput").innerHTML = userHighscore.Score;
+}
 
+function init() {
+    // Get stored from localStorage
+    var storedScores = JSON.parse(localStorage.getItem("userHighscore"));
+
+    if (storedScores !== null) {
+        userHighscore = storedScores;
+    }
+    renderHighscores();
+}
 
 // Sets the next question up to display on screen.
 function nextQuestion() {
-    
 
     for (var i = 0; i < optionButtons.length; i++) {
         optionButtons[i].textContent = questionInfo.choices[i];
         optionButtons[i].value = questionInfo.choices[i];
     }
-
     document.querySelector("#questionPrompt").textContent = questionInfo.title;
-
 }
 
+function checkAnswer() {
+    var playerAnswer = event.target.value;
+    if (playerAnswer) {
+        if (playerAnswer === questions[questionNum].answer) {
+            points++;
 
 
+        } else {
+            timeLeft -= 15;
 
-function checkAnswer(){
-        var playerAnswer = event.target.value;
-                if (playerAnswer) {
-                    if (playerAnswer === questions[questionNum].answer) {
-                        points++
-                        ;
+        }
 
-                        
-                    } else {
-                        timeLeft -= 15;
-                        console.log("wrong");
-                    }
+        questionNum++;
+        if (questions[questionNum] == undefined) {
+            endGame();
+            return;
+        }
 
-                    questionNum++;
-                    if (questions[questionNum] == undefined) {
-                        
-                        console.log("done questions");
-                        endGame();
-                        return;
-                        
-                    }
+        for (var i = 0; i < optionButtons.length; i++) {
 
-                    for (var i = 0; i < optionButtons.length; i++) {
-                        
-                        optionButtons[i].textContent = questions[questionNum].choices[i];
-                        optionButtons[i].value = questions[questionNum].choices[i];
-                    
-                    
-                    document.querySelector("#questionPrompt").textContent = questions[questionNum].title;
-                    }
+            optionButtons[i].textContent = questions[questionNum].choices[i];
+            optionButtons[i].value = questions[questionNum].choices[i];
 
-                    console.log(questions[questionNum]);
-                    console.log(questions[questionNum].answer);
-                }
-            }
-    
+            document.querySelector("#questionPrompt").textContent = questions[questionNum].title;
+        }
+    }
+}
 
+function endGame() {
 
- 
-function endGame (){
-    var finalPoints = points
-    
     document.querySelector("#questionSection").style = "display: none;";
     document.querySelector("#enterInitials").style = "display: block;";
     timerEl.setAttribute("style", "display:none")
     finalScore.textContent = points
-    console.log(finalPoints);
-    
-    
-
-    
+    return;
 }
 
-// initialSubmitBtn.addEventListener("click", function(event) {
-//     event.preventDefault();
-//     var userHighscore = {
-//         userInitials: userInitialsInput.value.trim(),
-//         score: ("5")
-//     };
-    
-//     localStorage.setItem("userHighscore", JSON.stringify(userHighscore));
-//     document.querySelector(".enterInitials").style = "display: none;";
-//     renderHighScore();
-    
-// });
+// event listener for submit button to log players score, stores score in local storage.
+submitButton.addEventListener("click", function (event) {
+    event.preventDefault();
+    userHighscore = {
+        userInitials: userInitials.value.trim(),
+        Score: (points)
+    };
+    localStorage.setItem("userHighscore", JSON.stringify(userHighscore));
+    document.querySelector("#enterInitials").style = "display: none;";
+    document.querySelector("#tryAgain").style = "display: block;";
+    renderHighScore();
+    return;
 
+});
+
+// Reports score at the end of the game
 function renderHighScore() {
 
-   
-    var lastScore = JSON.parse(localStorage.getItem(userHighscore));
 
-    // Check if data is returned, if not exit out of the function
-    if (lastScore !== null) {
-    document.getElementById("saved-name").innerHTML = userHighscore.userInitials;
-    document.getElementById("saved-score").innerHTML = userHighscore.score;
-  
+    var lastScore = JSON.parse(localStorage.getItem("userHighscore"));
+    document.getElementById("initialsOutput").innerHTML = userHighscore.userInitials + " - ";
+    document.getElementById("highscoreOutput").innerHTML = userHighscore.Score;
 
-  }
 }
-// displays the first question of the quiz and starts the timer countdown 
 
+// Starts the timer and sets the fuction to load the first question.
 function startTimer() {
     nextQuestion();
     var timeInterval = setInterval(function () {
         // As long as the `timeLeft` is greater than 1
         if (timeLeft > 1) {
             // Set the `textContent` of `timerEl` to show the remaining seconds
-            timerEl.textContent ="Time: " +timeLeft;
+            timerEl.textContent = "Time: " + timeLeft;
             // Decrement `timeLeft` by 1
             timeLeft--;
         } else if (timeLeft === 1) {
@@ -182,7 +171,7 @@ function startTimer() {
             timerEl.textContent = timeLeft + ' second remaining';
             timeLeft--;
         } else {
-            // Once `timeLeft` gets to 0, set `timerEl` to an empty string
+            // Once `timeLeft` gets to 0, set `timerEl` to an empty string and end the game
             timerEl.textContent = '';
             endGame();
 
@@ -194,8 +183,10 @@ function startTimer() {
 }
 
 
-startQuizEl.addEventListener("click", function () {
+startQuizEl.addEventListener("click", function (event) {
+    event.preventDefault();
     startTimer();
 });
 
 
+init();

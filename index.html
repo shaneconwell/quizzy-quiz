@@ -4,30 +4,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <link rel="stylesheet" type="text/css" href="./assets/css/style.css">
     <title>JavaScript Quiz!</title>
 </head>
 
 <body>
     <nav>
-        <button class="view-highscores">View Highscores</button>
-        <div class="timer">Time: 75</div>
+        <h4 id="highscoresContainer"> <u>Highscore</u></h4>
+        <div></div>
+        <span id="initialsOutput"></span>
+        <span id="highscoreOutput"></span>
+        <div class="timer">Time: 50</div>
     </nav>
     <main class="container">
         <div id="titleScreen">
             <h1>Code Quiz!</h1>
-
             <button id="startQuiz">Start Quiz!</button>
         </div>
         <div id="enterInitials">
             <h2>All done!</h2>
-            <p>Your final score is <span id = "finalScore"></span> </p>
-            
+            <p>Your final score is <span id="finalScore"></span> / 6! </p>
+            <input type="text" name="userInitials" id="userInitials" placeholder="Enter Initials Here." />
+            <button id="submitButton">Submit</button>
         </div>
         <section id="questionSection">
-            <h2 id="questionPrompt">
-            </h2>
+            <h2 id="questionPrompt"></h2>
             <div class="container">
                 <button class="answer-button" id="quizOption1">1</button>
                 <button class="answer-button" id="quizOption2">2</button>
@@ -35,19 +36,8 @@
                 <button class="answer-button" id="quizOption4">4</button>
             </div>
         </section>
-
-
-        <div id="answerResult"></div>
-
-
-        </div>
+        <button id="tryAgain" onClick="window.location.reload();">Try Again?</button>
     </main>
-    <div id="highScores">
-        
-        
-    </div>
-
-
     <script src="./assets/js/script.js"></script>
 </body>
 
