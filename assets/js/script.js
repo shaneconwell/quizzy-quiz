@@ -81,6 +81,7 @@ function init() {
     if (storedScores !== null) {
         userHighscore = storedScores;
     }
+    
     renderHighscores();
 }
 
